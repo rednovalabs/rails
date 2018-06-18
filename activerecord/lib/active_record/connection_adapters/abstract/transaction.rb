@@ -64,6 +64,13 @@ module ActiveRecord
 
       def rollback_records
         ite = records.uniq
+        begin
+          if ite.any?{|i| i.class.name == 'GeneralLedgerLineItem'}
+            Rails.logger.info("After Commit Logger: #{Time.now()}, Transaction.rollback_records.records: #{ite}")
+          end
+        rescue => e
+          Rails.logger.info("After Commit Error: #{Time.now()}, Transaction.rollback_records.records: #{ite}, Error: #{e}")
+        end
         while record = ite.shift
           begin
             record.rolledback! full_rollback?
@@ -84,6 +91,13 @@ module ActiveRecord
 
       def commit_records
         ite = records.uniq
+        begin
+          if ite.any?{|i| i.class.name == 'GeneralLedgerLineItem'}
+            Rails.logger.info("After Commit Logger: #{Time.now()}, Transaction.commit_records.records: #{ite}")
+          end
+        rescue => e
+          Rails.logger.info("After Commit Error: #{Time.now()}, Transaction.commit_records.records: #{ite}, Error: #{e}")
+        end
         while record = ite.shift
           begin
             record.committed!

@@ -311,6 +311,15 @@ module ActiveRecord
     # Ensure that it is not called if the object was never persisted (failed create),
     # but call it after the commit of a destroyed object.
     def committed!(should_run_callbacks = true) #:nodoc:
+      begin
+        if self.class.name == 'GeneralLedgerLineItem'
+          Rails.logger.info("After Commit Logger: #{Time.now()}, Transactions.committed!:
+            #{{self: self, should_run_callbacks: should_run_callbacks, destroyed: destroyed?, persisted: persisted?}}")
+        end
+      rescue => e
+        Rails.logger.info("After Commit Error: #{Time.now()}, Transactions.committed!:
+            #{{self: self, should_run_callbacks: should_run_callbacks, destroyed: destroyed?, persisted: persisted?}}, Error: #{e}")
+      end
       _run_commit_callbacks if should_run_callbacks && destroyed? || persisted?
     ensure
       force_clear_transaction_record_state
