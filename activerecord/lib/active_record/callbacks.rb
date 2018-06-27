@@ -325,14 +325,17 @@ module ActiveRecord
   private
 
     def create_or_update(*)
+      binding.pry
       _run_save_callbacks { super }
     end
 
     def _create_record
+      binding.pry
       _run_create_callbacks { super }
     end
 
     def _update_record(*)
+      binding.pry
       _run_update_callbacks { super }
     end
   end

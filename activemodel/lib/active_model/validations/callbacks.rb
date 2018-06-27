@@ -54,6 +54,7 @@ module ActiveModel
         #   person.valid? # => true
         #   person.name   # => "bob"
         def before_validation(*args, &block)
+          binding.pry
           options = args.extract_options!
 
           if options.key?(:on)
@@ -95,6 +96,7 @@ module ActiveModel
         #   person.valid? # => true
         #   person.status # => true
         def after_validation(*args, &block)
+          binding.pry
           options = args.extract_options!
           options = options.dup
           options[:prepend] = true
@@ -115,6 +117,7 @@ module ActiveModel
 
       # Overwrite run validations to include callbacks.
       def run_validations!
+        binding.pry
         _run_validation_callbacks { super }
       end
     end

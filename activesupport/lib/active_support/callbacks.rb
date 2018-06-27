@@ -92,6 +92,7 @@ module ActiveSupport
     # smoothly through and into the supplied block, we want as little evidence
     # as possible that we were here.
     def run_callbacks(kind)
+      binding.pry
       callbacks = __callbacks[kind.to_sym]
 
       if callbacks.empty?
@@ -125,6 +126,7 @@ module ActiveSupport
             break env.value
           end
         end
+        binding.pry
 
         # Common case: no 'around' callbacks defined
         if next_sequence.final?
@@ -160,6 +162,7 @@ module ActiveSupport
 
         class Before
           def self.build(callback_sequence, user_callback, user_conditions, chain_config, filter)
+            binding.pry
             halted_lambda = chain_config[:terminator]
 
             if user_conditions.any?
@@ -170,6 +173,7 @@ module ActiveSupport
           end
 
           def self.halting_and_conditional(callback_sequence, user_callback, user_conditions, halted_lambda, filter)
+            binding.pry
             callback_sequence.before do |env|
               target = env.target
               value  = env.value
@@ -189,6 +193,7 @@ module ActiveSupport
           private_class_method :halting_and_conditional
 
           def self.halting(callback_sequence, user_callback, halted_lambda, filter)
+            binding.pry
             callback_sequence.before do |env|
               target = env.target
               value  = env.value
@@ -211,6 +216,7 @@ module ActiveSupport
 
         class After
           def self.build(callback_sequence, user_callback, user_conditions, chain_config)
+            binding.pry
             if chain_config[:skip_after_callbacks_if_terminated]
               if user_conditions.any?
                 halting_and_conditional(callback_sequence, user_callback, user_conditions)
@@ -227,6 +233,7 @@ module ActiveSupport
           end
 
           def self.halting_and_conditional(callback_sequence, user_callback, user_conditions)
+            binding.pry
             callback_sequence.after do |env|
               target = env.target
               value  = env.value
@@ -242,6 +249,7 @@ module ActiveSupport
           private_class_method :halting_and_conditional
 
           def self.halting(callback_sequence, user_callback)
+            binding.pry
             callback_sequence.after do |env|
               unless env.halted
                 user_callback.call env.target, env.value
@@ -332,6 +340,7 @@ module ActiveSupport
 
         # Wraps code with filter
         def apply(callback_sequence)
+          binding.pry
           user_conditions = conditions_lambdas
           user_callback = CallTemplate.build(@filter, self)
 
@@ -622,6 +631,7 @@ module ActiveSupport
         # This is used internally to append, prepend and skip callbacks to the
         # CallbackChain.
         def __update_callbacks(name) #:nodoc:
+          binding.pry
           ([self] + ActiveSupport::DescendantsTracker.descendants(self)).reverse_each do |target|
             chain = target.get_callbacks name
             yield target, chain.dup
@@ -665,6 +675,7 @@ module ActiveSupport
         # * <tt>:prepend</tt> - If +true+, the callback will be prepended to the
         #   existing chain rather than appended.
         def set_callback(name, *filter_list, &block)
+          binding.pry
           type, filters, options = normalize_callback_params(filter_list, block)
 
           self_chain = get_callbacks name
@@ -689,6 +700,7 @@ module ActiveSupport
         # An <tt>ArgumentError</tt> will be raised if the callback has not
         # already been set (unless the <tt>:raise</tt> option is set to <tt>false</tt>).
         def skip_callback(name, *filter_list, &block)
+          binding.pry
           type, filters, options = normalize_callback_params(filter_list, block)
 
           options[:raise] = true unless options.key?(:raise)
@@ -714,6 +726,7 @@ module ActiveSupport
 
         # Remove all set callbacks for the given event.
         def reset_callbacks(name)
+          binding.pry
           callbacks = get_callbacks name
 
           ActiveSupport::DescendantsTracker.descendants(self).each do |target|
@@ -804,6 +817,7 @@ module ActiveSupport
         # Calling +define_callbacks+ multiple times with the same +names+ will
         # overwrite previous callbacks registered with +set_callback+.
         def define_callbacks(*names)
+          binding.pry
           options = names.extract_options!
 
           names.each do |name|
@@ -840,6 +854,7 @@ module ActiveSupport
           end
 
           def set_callbacks(name, callbacks) # :nodoc:
+            binding.pry
             self.__callbacks = __callbacks.merge(name.to_sym => callbacks)
           end
       end

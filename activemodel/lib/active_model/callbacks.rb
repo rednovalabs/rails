@@ -106,6 +106,7 @@ module ActiveModel
     # NOTE: +method_name+ passed to define_model_callbacks must not end with
     # <tt>!</tt>, <tt>?</tt> or <tt>=</tt>.
     def define_model_callbacks(*callbacks)
+      binding.pry
       options = callbacks.extract_options!
       options = {
         skip_after_callbacks_if_terminated: true,
@@ -117,6 +118,7 @@ module ActiveModel
 
       callbacks.each do |callback|
         define_callbacks(callback, options)
+        binding.pry
 
         types.each do |type|
           send("_define_#{type}_model_callback", self, callback)
