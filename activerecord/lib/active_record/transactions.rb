@@ -313,14 +313,20 @@ module ActiveRecord
     def committed!(should_run_callbacks = true) #:nodoc:
       begin
         if self.class.name == 'GeneralLedgerLineItem'
-          Rails.logger.info("After Commit Logger: #{Time.now()}, Transactions.committed!:
-            #{{self: self, should_run_callbacks: should_run_callbacks, destroyed: destroyed?, persisted: persisted?}}")
+          Rails.logger.info("After Commit Logger: #{Time.now()}, Transactions.committed!: #{{self: self, should_run_callbacks: should_run_callbacks, destroyed: destroyed?, persisted: persisted?}}")
         end
       rescue => e
-        Rails.logger.info("After Commit Error: #{Time.now()}, Transactions.committed!:
-            #{{self: self, should_run_callbacks: should_run_callbacks, destroyed: destroyed?, persisted: persisted?}}, Error: #{e}")
+        Rails.logger.info("After Commit Error: #{Time.now()}, Transactions.committed!: #{{self: self, should_run_callbacks: should_run_callbacks, destroyed: destroyed?, persisted: persisted?}}, Error: #{e}")
       end
-      _run_commit_callbacks if should_run_callbacks && destroyed? || persisted?
+      result = _run_commit_callbacks if should_run_callbacks && destroyed? || persisted?
+      begin
+        if self.class.name == 'GeneralLedgerLineItem'
+          Rails.logger.info("_run_commit_callbacks Result: #{Time.now()}, Transactions.committed!.result: #{{self: self, result: result}}")
+        end
+      rescue => e
+        Rails.logger.info("_run_commit_callbacks Error: #{Time.now()}, Transactions.committed!.result: #{{self: self, result: result}}, Error: #{e}")
+      end
+      result
     ensure
       force_clear_transaction_record_state
     end
