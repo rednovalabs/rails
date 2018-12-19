@@ -140,8 +140,14 @@ module ActiveRecord
       end
 
       def commit
-        connection.commit_db_transaction
+        commit_result = connection.commit_db_transaction
+        # commit_db_transaction will return PG::Result upon success, otherwise PG::Error
+        @records.uniq.each {|r| ship_committed_record(r)} if commit_result.is_a?(PG::Result)
         super
+      end
+
+      def ship_committed_record(record)
+        record.ship_data if record.is_a?(GeneralLedgerLineItem)
       end
     end
 
